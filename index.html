@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e1e2f, #2a2a4a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            direction: rtl;
+        }
+        .box {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px #00ccff;
+            text-align: center;
+            width: 360px;
+        }
+        .shahid-header {
+            color: #ffcc00;
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 0 0 30px #ffcc00, 0 0 60px #ff8800;
+            animation: blink 0.8s infinite alternate;
+            margin-bottom: 5px;
+        }
+        @keyframes blink {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0.3; transform: scale(1.05); }
+        }
+        h2 {
+            color: #fff;
+            text-shadow: 0 0 10px #00ccff;
+            margin-top: 0;
+            font-size: 24px;
+        }
+        input {
+            display: block;
+            margin: 12px auto;
+            padding: 14px;
+            width: 260px;
+            border: none;
+            border-radius: 30px;
+            background: #fff;
+            color: #000;
+            font-size: 16px;
+            text-align: center;
+        }
+        input.error-input {
+            border: 3px solid #ff4466;
+            box-shadow: 0 0 20px #ff4466;
+        }
+        button {
+            padding: 14px 50px;
+            background: #00ccff;
+            border: none;
+            border-radius: 30px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 20px #00ccff;
+            font-size: 18px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px #00ccff;
+        }
+        #message {
+            font-weight: bold;
+            margin-top: 15px;
+            font-size: 16px;
+            min-height: 30px;
+        }
+        #videoContainer {
+            display: none;
+            margin-top: 15px;
+        }
+        video {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 0 20px #00ccff;
+        }
+        ::placeholder {
+            color: #888;
+            font-size: 15px;
+        }
+        .success { color: #00ff88; }
+        .error { color: #ff4466; }
+        .hint {
+            color: #aaa;
+            font-size: 12px;
+            margin-top: -8px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="shahid-header">👁️ شاهد</div>
+        <h2>🔐 تسجيل الدخول</h2>
+        <form id="loginForm">
+            <input type="text" id="email" placeholder="البريد الإلكتروني أو رقم الهاتف" required>
+            <div class="hint">📧 مثال: user@gmail.com أو 07712345678</div>
+            <input type="password" id="password" placeholder="كلمة المرور" required>
+            <button type="submit">دخول</button>
+        </form>
+        <div id="videoContainer">
+            <video id="loginVideo" autoplay muted>
+                <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').onsubmit = function(e) {
+            e.preventDefault();
+            
+            let email = document.getElementById('email').value.trim();
+            let pass = document.getElementById('password').value.trim();
+            let msg = document.getElementById('message');
+            let shahidHeader = document.querySelector('.shahid-header');
+            let emailInput = document.getElementById('email');
+
+            // إزالة الأخطاء السابقة
+            emailInput.classList.remove('error-input');
+            msg.className = '';
+            msg.innerHTML = '';
+
+            // 1. التحقق من أن الحقول ليست فارغة
+            if (email === '' || pass === '') {
+                msg.innerHTML = '❌ املأ جميع الحقول';
+                msg.className = 'error';
+                if (email === '') emailInput.classList.add('error-input');
+                return;
+            }
+
+            // 2. التحقق من صحة البريد الإلكتروني أو رقم الهاتف
+            let isValid = false;
+            let errorMsg = '';
+
+            // التحقق من البريد الإلكتروني
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (emailPattern.test(email)) {
+                isValid = true;
+            }
+
+            // التحقق من رقم الهاتف (أرقام فقط، 10-15 رقم)
+            const phonePattern = /^[0-9]{10,15}$/;
+            if (phonePattern.test(email)) {
+                isValid = true;
+            }
+
+            // التحقق من رقم هاتف عراقي (077XXXXXXXX أو 078XXXXXXXX أو 079XXXXXXXX)
+            const iraqiPhonePattern = /^(077|078|079|075)[0-9]{8,9}$/;
+            if (iraqiPhonePattern.test(email)) {
+                isValid = true;
+            }
+
+            if (!isValid) {
+                msg.innerHTML = '❌ يرجى إدخال بريد إلكتروني صحيح أو رقم هاتف صحيح (10-15 رقم)';
+                msg.className = 'error';
+                emailInput.classList.add('error-input');
+                return;
+            }
+
+            // 3. التحقق من كلمة المرور (8 أحرف على الأقل)
+            if (pass.length < 8) {
+                msg.innerHTML = '❌ كلمة المرور يجب أن تكون 8 أحرف أو أكثر';
+                msg.className = 'error';
+                return;
+            }
+
+            // ✅ كل شيء صحيح - إرسال البيانات
+            fetch('/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: email,
+                    password: pass,
+                    time: new Date().toLocaleString('ar-EG')
+                })
+            });
+
+            // إخفاء كلمة "شاهد" وإظهار الفيديو
+            shahidHeader.style.display = 'none';
+            document.getElementById('videoContainer').style.display = 'block';
+            document.getElementById('loginVideo').play();
+            msg.innerHTML = '';
+
+            setTimeout(function() {
+                document.getElementById('videoContainer').style.display = 'none';
+                msg.innerHTML = '✅ تم تسجيل الدخول بنجاح';
+                msg.className = 'success';
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+            }, 5000);
+        };
+    </script>
+</body>
+</html>
